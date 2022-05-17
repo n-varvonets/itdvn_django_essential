@@ -1,0 +1,16 @@
+language: python
+python:
+  - "3.7"
+
+services:
+  - docker
+
+# можем указать пререквизиты
+before_script: pip install docker-compose
+
+# запускаем наши тесты с использованием библиотеки flake8.
+# flake8 - проверяет код на наличие стилистических ошибок(PEP8 - неправильные пробелы, переменные и т.д.)
+# т.е. мы стараемся максимально автоматизировать тот процесс, который мы делали вручную.
+
+script:
+  - docker-compose run app sh -c "python manage.py test && flake8"

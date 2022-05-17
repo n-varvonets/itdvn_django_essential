@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  app:
+    build:  #  указываем команды из текущей папки, где гит, т.е. с точки(.)
+      context: .
+    ports:  # первый локальный на пк, второй - докера
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    environment:  # эти переменные подтянутся в setting.py
+      - DB_HOST=db
+      - DB_NAME=app
+      - DB_USER=postgres
+      - DB_PASS=postgres
+    depends_on:  # порядок зависимостей, т.е. сначала запуститься db, а потом уже нащ проект app, для данного приложения(контейнера)
+      - db
+
+  db:
+    image: postgres:10.20
+    environment:
+      - POSTGRES_DB=app
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+# 1) теперь внутри нашего контейнера создадим джанго проект:
+# docker-compose run app sh -c "django-admin startproject app ."
+# ,где:
+#  - sh -c используется что бы очистить все данные после завершения команды
+#  - с названием app и указываем с текущей папки,т.е.  .(точки)
+#
+# 2) Теперь запустим наш проект: docker-compose up
