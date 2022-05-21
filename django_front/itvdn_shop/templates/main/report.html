@@ -4,6 +4,14 @@
 
 {% block content %}
     <canvas id="bar-chart" width="800" height="450"></canvas>
+<!--
+-выше добавили тег канвас;
+- с помощью библиотеки Chart и вытягивания с помощью jquery Chart($("#bar-chart")
+- datasets -перечень данных, которые мы будем выводить на нашем графике
+- не будем выводить легенду, legend display: false (доп инфа)
+- будем выводить заголовок title: display: true,
+- с типом  type: 'bar',, можно выбрать и другие
+-->
     <script>
         new Chart($("#bar-chart"), {
             type: 'bar',
