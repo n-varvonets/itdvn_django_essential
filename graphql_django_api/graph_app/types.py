@@ -33,4 +33,8 @@ class CarType(DjangoObjectType):
         fields = ("id", "license_plate", "make", "model")  # поле можно не указывать если хотим вывести все поля
 
 
+class UserType(DjangoObjectType):
+    class Meta:
+        model = get_user_model()
+
 

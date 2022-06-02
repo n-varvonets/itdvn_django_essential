@@ -2,7 +2,7 @@ import graphene
 from django.contrib.auth import get_user_model
 from graphql_jwt.shortcuts import create_refresh_token, get_token
 
-from graph_app.types import MakeType  #, UserType
+from graph_app.types import MakeType, UserType
 from graph_app.models import Make
 
 
@@ -76,27 +76,28 @@ class DeleteMake(graphene.Mutation):
         except Make.DoesNotExist:
             return cls(ok=True)
 
-#
-# class CreateUser(graphene.Mutation):
-#     user = graphene.Field(UserType)
-#     token = graphene.String()
-#     refresh_token = graphene.String()
-#
-#     class Arguments:
-#         password = graphene.String(required=True)
-#         email = graphene.String(required=True)
-#
-#     def mutate(self, info, password, email):
-#         user = get_user_model()(
-#             email=email,
-#         )
-#         user.set_password(password)
-#         user.save()
-#
-#         token = get_token(user)
-#         refresh_token = create_refresh_token(user)
-#
-#         return CreateUser(user=user, token=token, refresh_token=refresh_token)
+
+class CreateUser(graphene.Mutation):
+    user = graphene.Field(UserType)  # вытягиваем нашу модель пользователя через настройки
+    token = graphene.String()  # при создании книги - сразу будет у него атррибуты токена
+    refresh_token = graphene.String()  #
+
+    class Arguments:
+        # аргументы - это наши пасс и мыла юзера
+        password = graphene.String(required=True)
+        email = graphene.String(required=True)
+
+    def mutate(self, info, password, email):
+        user = get_user_model()(
+            email=email,
+        )
+        user.set_password(password)
+        user.save()
+
+        token = get_token(user)
+        refresh_token = create_refresh_token(user)
+
+        return CreateUser(user=user, token=token, refresh_token=refresh_token)
 
 
 class Mutation(graphene.ObjectType):
@@ -104,4 +105,4 @@ class Mutation(graphene.ObjectType):
     create_make = CreateMake.Field()
     update_make = UpdateMake.Field()
     delete_make = DeleteMake.Field()
-    # create_user = CreateUser.Field()
+    create_user = CreateUser.Field()

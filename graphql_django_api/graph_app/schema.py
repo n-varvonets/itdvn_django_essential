@@ -4,8 +4,8 @@ from graphene_django.filter import DjangoFilterConnectionField
 # дальше создаем наши типы из models. в graphql есть существующие типы (int, id, str), а мы здесь уже \
 # создаем наши - кастомные(чем-то напоминает сериалиатор).
 # импортируем созданные и перенесенные в types ноши кастомные типы
-
-from .types import CarType, MakeType, ModelType
+from django.contrib.auth import get_user_model
+from .types import CarType, MakeType, ModelType, UserType
 from .models import Car, Make, Model
 
 
@@ -74,6 +74,26 @@ class Query(graphene.ObjectType):
             return Model.objects.all()
         except Model.DoesNotExist:
             return None
+
+    # тоже самое проделываем и для нашего пользотваля, но
+    api_client = graphene.Field(UserType)
+    api_clients = graphene.List(UserType)
+
+    def resolve_api_client(self, info):
+        user = info.context.user
+        # здесь провемя пользотвателя наш - ананимус?
+        if user.is_anonymous:
+            raise Exception('Authentication Failure: Your must be signed in')
+        return user
+
+    def resolve_api_clients(self, info):
+        user = info.context.user
+
+        if user.is_anonymous:
+            raise Exception('Authentication Failure: Your must be signed in')
+        if not user.is_staff:
+            raise Exception('Authentication Failure: Must be Manager')
+        return get_user_model().objects.all()
 
 
 # 4) Подключаем к нашей главной схеме наш обьект Query. Можно так же мутации, но эт чуть позже

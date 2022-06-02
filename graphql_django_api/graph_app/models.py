@@ -1,27 +1,27 @@
 from django.db import models
-# from django.contrib.auth.models import AbstractUser
-#
-# from graph_app.managers import UserManager
-#
-#
-# class ApiClient(AbstractUser):
-#     username = None
-#     email = models.EmailField("email address", unique=True)
-#
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = []
-#
-#     objects = UserManager()
-#
-#     def get_username(self):
-#         return f"{self.email}"
-#
-#     class Meta:
-#         verbose_name = "API client"
-#         verbose_name_plural = "API clients"
-#
-#     def __str__(self):
-#         return f"{self.pk}_{self.email}"
+from django.contrib.auth.models import AbstractUser
+
+from graph_app.managers import UserManager
+
+
+class ApiClient(AbstractUser):
+    username = None  # де ло кто использует ник - чаще всего мыло
+    email = models.EmailField("email address", unique=True)
+
+    USERNAME_FIELD = 'email'  # место нашего USERNAME_FIELD будет наше поле 'email
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()
+
+    def get_username(self):
+        return f"{self.email}"
+
+    class Meta:
+        verbose_name = "API client"
+        verbose_name_plural = "API clients"
+
+    def __str__(self):
+        return f"{self.pk}_{self.email}"
 
 
 class Make(models.Model):
