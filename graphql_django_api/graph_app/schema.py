@@ -1,44 +1,31 @@
 import graphene
-from graphene_django import DjangoObjectType  # хотим создать типы для наших моделей и ниже импортируем наши модели:
+from graphene_django.filter import DjangoFilterConnectionField
 
-from .models import Car, Make, Model
-
-# дальше создаем наши типы из models. в grapgql есть суствующие типы (int, id, str), а мы здесь уже \
+# дальше создаем наши типы из models. в graphql есть существующие типы (int, id, str), а мы здесь уже \
 # создаем наши - кастомные(чем-то напоминает сериалиатор).
-class MakeType(DjangoObjectType):
-    """
-    Указываем нашу модель с полями
-    """
-    class Meta:
-        model = Make
-        fields = ("id", "name")
+# импортируем созданные и перенесенные в types ноши кастомные типы
 
-
-class ModelType(DjangoObjectType):
-    class Meta:
-        model = Model
-        fields = ("id", "name")
-
-
-class CarType(DjangoObjectType):
-    class Meta:
-        model = Car
-        fields = ("id", "license_plate", "make", "model")  # поле можно не указывать если хотим вывести все поля
+from .types import CarType, MakeType, ModelType
+from .models import Car, Make, Model
 
 
 class Query(graphene.ObjectType):
     """
-    Создаим клас отором укажем наии возможности
+    Создадим клас отором укажем наии возможности
     """
     # 1)создадим первый параметр из типа модели make
-    make = graphene.Field(MakeType, id=graphene.Int())  # в котором в п передали наш тип модели и поле поиска - id с типом int
+    # make = graphene.Field(MakeType, id=graphene.Int())  # в котором в п передали наш тип модели и поле поиска - id с типом int
+
+    # 1.1) случай когда мы хотим добавим доп поля для поиска(фильтрации) к примеру не только по id, но и по name
+    make = graphene.relay.Node.Field(MakeType)  # в котором в п передали наш тип модели и поле поиска - id с типом int
+    makes = DjangoFilterConnectionField(MakeType)  # для множества елементов фильтр
 
     # такое же и для машины
     car = graphene.Field(CarType, id=graphene.Int())
     model = graphene.Field(ModelType, id=graphene.Int())
 
     # 2)теперь настраиваем возможность вытянуть *все* типы
-    makes = graphene.List(MakeType)
+    # makes = graphene.List(MakeType)  # чий варик, но выше добавим возможность с доп полем писка(фильтра)
     cars = graphene.List(CarType)
     models = graphene.List(ModelType)
 
@@ -90,7 +77,7 @@ class Query(graphene.ObjectType):
 
 
 # 4) Подключаем к нашей главной схеме наш обьект Query. Можно так же мутации, но эт чуть позже
-schema_my = graphene.Schema(query=Query)
-
+# schema_my = graphene.Schema(query=Query)
+#  так делают если не импортируют текущий файл в главный нашего приложения(graphql_django_api)
 
 
