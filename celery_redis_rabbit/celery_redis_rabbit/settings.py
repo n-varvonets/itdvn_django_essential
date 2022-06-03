@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'django_celery_results',
+    # 'django_celery_results',  # для rebbitMQ
+    'django_celery_beat',   # типо крона + python manage.py migrate
     'celery_redis',
 ]
 
@@ -55,6 +56,16 @@ ROOT_URLCONF = 'celery_redis_rabbit.urls'
 
 CELERY_BROKER_URL = "redis://localhost:6379"  # сначала будем использовать редис
 CELERY_RESULT_BACKEND = 'redis'
+# pip install django_celery_beat добавить в INSTALLED_APPS
+CELERY_BEAT_SCHEDULE = {
+    "weather": {
+        "task": "celery_redis.tasks.fetch_weather",
+        "schedule": 20.0,  # можем даже указать конкретный день или по солнцестоянию
+        # 'session_cleanup': nightly_schedule  # т.к. за n времени может насобираться дофига памяти, то можем \
+        # автоматически задать время для очистки инфы о тасок
+    },
+}
+
 
 TEMPLATES = [
     {

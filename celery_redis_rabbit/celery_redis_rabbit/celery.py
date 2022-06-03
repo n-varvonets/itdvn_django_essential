@@ -13,4 +13,5 @@ app.autodiscover_tasks()
 
 # + нужно указать наше приложение в inint.py
 # celery -A celery_redis_rabbit worker -l DEBUG
+# celery -A celery_redis_rabbit worker --beat --scheduler django --loglevel=debug  # для крона
 
