@@ -52,6 +52,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+
 ROOT_URLCONF = 'celery_redis_rabbit.urls'
 
 CELERY_BROKER_URL = "redis://localhost:6379"  # сначала будем использовать редис
